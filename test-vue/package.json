@@ -1,0 +1,16 @@
+{
+  "name": "@cb-ishusingh/test-vue-wrapper",
+  "version": "1.0.0",
+  "description": "Test Vue wrapper for automated publishing",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "echo 'Building test Vue package...' && mkdir -p dist && echo 'export const TestVueComponent = () => \"Hello from Test Vue!\";' > dist/index.js",
+    "test": "echo 'No tests configured'"
+  },
+  "keywords": ["test", "vue", "wrapper"],
+  "author": "Test Author",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ]
+}

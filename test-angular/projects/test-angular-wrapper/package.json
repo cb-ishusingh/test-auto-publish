@@ -1,0 +1,16 @@
+{
+  "name": "@cb-ishusingh/test-angular-wrapper",
+  "version": "1.0.0",
+  "description": "Test Angular wrapper for automated publishing",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "echo 'Building test Angular package...' && mkdir -p dist && echo 'export const TestAngularComponent = () => \"Hello from Test Angular!\";' > dist/index.js",
+    "test": "echo 'No tests configured'"
+  },
+  "keywords": ["test", "angular", "wrapper"],
+  "author": "Test Author",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ]
+}
