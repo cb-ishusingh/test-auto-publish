@@ -3,7 +3,7 @@ name: Auto Publish Packages
 on:
   push:
     branches:
-      - 'master'
+      - 'main'
     paths:
       - 'test-vue/package.json'
       - 'test-react/package.json'
