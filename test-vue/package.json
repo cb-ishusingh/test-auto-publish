@@ -1,6 +1,6 @@
 {
   "name": "@cb-ishusingh/test-vue-wrapper",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Test Vue wrapper for automated publishing",
   "main": "dist/index.js",
   "scripts": {
