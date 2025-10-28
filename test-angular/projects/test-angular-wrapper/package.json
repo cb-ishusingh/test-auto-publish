@@ -1,6 +1,6 @@
 {
   "name": "@cb-ishusingh/test-angular-wrapper",
-  "version": "2.1.3",
+  "version": "2.1.4",
   "description": "Test Angular wrapper for automated publishing",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
