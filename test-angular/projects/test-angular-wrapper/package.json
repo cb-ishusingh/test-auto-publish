@@ -3,8 +3,9 @@
   "version": "2.1.3",
   "description": "Test Angular wrapper for automated publishing",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "echo 'Building test Angular package...' && mkdir -p dist && echo 'export const TestAngularComponent = () => \"Hello from Test Angular!\";' > dist/index.js",
+    "build": "mkdir -p dist && cp src/index.ts dist/index.js && echo 'export * from \"./index\";' > dist/index.d.ts",
     "test": "echo 'No tests configured'"
   },
   "keywords": [

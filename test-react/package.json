@@ -3,8 +3,9 @@
   "version": "1.2.3",
   "description": "Test React wrapper for automated publishing",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "echo 'Building test React package...' && mkdir -p dist && echo 'export const TestReactComponent = () => \"Hello from Test React!\";' > dist/index.js",
+    "build": "mkdir -p dist && cp src/index.tsx dist/index.js && echo 'export * from \"./index\";' > dist/index.d.ts",
     "test": "echo 'No tests configured'"
   },
   "keywords": [
