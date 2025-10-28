@@ -124,7 +124,7 @@ jobs:
         if: env.skip_publish == 'false'
         run: |
           cd test-react
-          echo "Publishing @cb-ishusingh/test-react-wrapper@$PACKAGE_VERSION"
+          echo "Publishing @ishusingh/test-react-wrapper@$PACKAGE_VERSION"
           npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -190,7 +190,7 @@ jobs:
         if: env.skip_publish == 'false'
         run: |
           cd test-vue
-          echo "Publishing @cb-ishusingh/test-vue-wrapper@$PACKAGE_VERSION"
+          echo "Publishing @ishusingh/test-vue-wrapper@$PACKAGE_VERSION"
           npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -256,7 +256,7 @@ jobs:
         if: env.skip_publish == 'false'
         run: |
           cd test-angular/projects/test-angular-wrapper
-          echo "Publishing @cb-ishusingh/test-angular-wrapper@$PACKAGE_VERSION"
+          echo "Publishing @ishusingh/test-angular-wrapper@$PACKAGE_VERSION"
           npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
