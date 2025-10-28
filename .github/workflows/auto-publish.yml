@@ -18,6 +18,8 @@ jobs:
   detect-and-publish:
     runs-on: ubuntu-latest
     outputs:
+      release-branch: ${{ steps.branch-info.outputs.branch }}
+      release-version: ${{ steps.branch-info.outputs.version }}
       react-changed: ${{ steps.changes.outputs.react }}
       vue-changed: ${{ steps.changes.outputs.vue }}
       angular-changed: ${{ steps.changes.outputs.angular }}
@@ -26,6 +28,17 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 2
+
+      - name: Extract version information
+        id: branch-info
+        run: |
+          # Get current branch name
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          echo "branch=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          
+          # Since we're on master/main, we'll use package.json versions
+          echo "version=" >> $GITHUB_OUTPUT
+          echo "Master/main branch detected - will use package.json versions for publishing"
 
       - name: Check for changed packages
         id: changes
@@ -60,6 +73,7 @@ jobs:
     needs: detect-and-publish
     if: needs.detect-and-publish.outputs.react-changed == 'true'
     runs-on: ubuntu-latest
+    environment: npm-publish-release
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -73,24 +87,59 @@ jobs:
       - name: Install dependencies
         run: |
           cd test-react
-          npm install
+          npm ci
 
       - name: Build package
         run: |
           cd test-react
           npm run build
 
-      - name: Publish React wrapper to npm
+      - name: Display version information
         run: |
           cd test-react
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          
+          echo "Package.json version: $PACKAGE_VERSION"
+          echo "Publishing package with version: $PACKAGE_VERSION"
+
+      - name: Check if version exists in npm registry
+        run: |
+          cd test-react
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          
+          NPM_PACKAGE_URL="https://registry.npmjs.org/$PACKAGE_NAME/$PACKAGE_VERSION"
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" $NPM_PACKAGE_URL)
+          
+          if [ $HTTP_STATUS -eq 200 ]; then
+            echo "Version $PACKAGE_VERSION already exists in npm registry"
+            echo "Skipping publish for React wrapper"
+            echo "skip_publish=true" >> $GITHUB_ENV
+          else
+            echo "Version $PACKAGE_VERSION does not exist in npm registry"
+            echo "skip_publish=false" >> $GITHUB_ENV
+          fi
+
+      - name: Publish React wrapper to npm
+        if: env.skip_publish == 'false'
+        run: |
+          cd test-react
+          echo "Publishing @cb-ishusingh/test-react-wrapper@$PACKAGE_VERSION"
           npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: React package already exists
+        if: env.skip_publish == 'true'
+        run: |
+          echo "React package version already exists in the npm registry."
+          echo "No action needed."
 
   publish-vue:
     needs: detect-and-publish
     if: needs.detect-and-publish.outputs.vue-changed == 'true'
     runs-on: ubuntu-latest
+    environment: npm-publish-release
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -104,24 +153,59 @@ jobs:
       - name: Install dependencies
         run: |
           cd test-vue
-          npm install
+          npm ci
 
       - name: Build package
         run: |
           cd test-vue
           npm run build
 
-      - name: Publish Vue wrapper to npm
+      - name: Display version information
         run: |
           cd test-vue
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          
+          echo "Package.json version: $PACKAGE_VERSION"
+          echo "Publishing package with version: $PACKAGE_VERSION"
+
+      - name: Check if version exists in npm registry
+        run: |
+          cd test-vue
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          
+          NPM_PACKAGE_URL="https://registry.npmjs.org/$PACKAGE_NAME/$PACKAGE_VERSION"
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" $NPM_PACKAGE_URL)
+          
+          if [ $HTTP_STATUS -eq 200 ]; then
+            echo "Version $PACKAGE_VERSION already exists in npm registry"
+            echo "Skipping publish for Vue wrapper"
+            echo "skip_publish=true" >> $GITHUB_ENV
+          else
+            echo "Version $PACKAGE_VERSION does not exist in npm registry"
+            echo "skip_publish=false" >> $GITHUB_ENV
+          fi
+
+      - name: Publish Vue wrapper to npm
+        if: env.skip_publish == 'false'
+        run: |
+          cd test-vue
+          echo "Publishing @cb-ishusingh/test-vue-wrapper@$PACKAGE_VERSION"
           npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Vue package already exists
+        if: env.skip_publish == 'true'
+        run: |
+          echo "Vue package version already exists in the npm registry."
+          echo "No action needed."
 
   publish-angular:
     needs: detect-and-publish
     if: needs.detect-and-publish.outputs.angular-changed == 'true'
     runs-on: ubuntu-latest
+    environment: npm-publish-release
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -135,19 +219,53 @@ jobs:
       - name: Install dependencies
         run: |
           cd test-angular
-          npm install
+          npm ci
 
       - name: Build package
         run: |
           cd test-angular/projects/test-angular-wrapper
           npm run build
 
-      - name: Publish Angular wrapper to npm
+      - name: Display version information
         run: |
           cd test-angular/projects/test-angular-wrapper
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          
+          echo "Package.json version: $PACKAGE_VERSION"
+          echo "Publishing package with version: $PACKAGE_VERSION"
+
+      - name: Check if version exists in npm registry
+        run: |
+          cd test-angular/projects/test-angular-wrapper
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          
+          NPM_PACKAGE_URL="https://registry.npmjs.org/$PACKAGE_NAME/$PACKAGE_VERSION"
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" $NPM_PACKAGE_URL)
+          
+          if [ $HTTP_STATUS -eq 200 ]; then
+            echo "Version $PACKAGE_VERSION already exists in npm registry"
+            echo "Skipping publish for Angular wrapper"
+            echo "skip_publish=true" >> $GITHUB_ENV
+          else
+            echo "Version $PACKAGE_VERSION does not exist in npm registry"
+            echo "skip_publish=false" >> $GITHUB_ENV
+          fi
+
+      - name: Publish Angular wrapper to npm
+        if: env.skip_publish == 'false'
+        run: |
+          cd test-angular/projects/test-angular-wrapper
+          echo "Publishing @cb-ishusingh/test-angular-wrapper@$PACKAGE_VERSION"
           npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Angular package already exists
+        if: env.skip_publish == 'true'
+        run: |
+          echo "Angular package version already exists in the npm registry."
+          echo "No action needed."
 
   release-summary:
     needs: [detect-and-publish, publish-react, publish-vue, publish-angular]
@@ -157,6 +275,9 @@ jobs:
       - name: Release Summary
         run: |
           echo "## 🚀 Package Publishing Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** \`${{ needs.detect-and-publish.outputs.release-branch }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Trigger:** Release branch merged to master/main" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Package | Changed | Published | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|---------|---------|-----------|--------|" >> $GITHUB_STEP_SUMMARY
@@ -194,4 +315,5 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 📋 Next Steps" >> $GITHUB_STEP_SUMMARY
           echo "1. Verify packages are published correctly on npm" >> $GITHUB_STEP_SUMMARY
-          echo "2. Check package versions and functionality" >> $GITHUB_STEP_SUMMARY
+          echo "2. Create git tag for the release" >> $GITHUB_STEP_SUMMARY
+          echo "3. Update release notes" >> $GITHUB_STEP_SUMMARY
