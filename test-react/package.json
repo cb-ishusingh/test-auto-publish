@@ -1,5 +1,5 @@
 {
-  "name": "@ishusingh/test-react-wrapper",
+  "name": "@cb-ishusingh/test-react-wrapper",
   "version": "1.2.7",
   "description": "Test React wrapper for automated publishing",
   "main": "dist/index.js",
